@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<title>Monand | Do'kon</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Jost:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+/* Monand — qora interfeys + logo shaftolisi #FACFAE */
+--bg:#0B0908; --card:#16120F; --card-2:#1E1814; --line:#2A221D;
+--text:#F5ECE4; --muted:#A3918A; --peach:#FACFAE; --peach-2:#E9AE86; --peach-ink:#1A120D;
+--ok:#9CC79F; --err:#FF9C8A;
+--serif:'Cormorant Garamond',Georgia,serif;
+--r:22px;
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:Jost,system-ui,sans-serif}
+body{max-width:520px;margin:0 auto;min-height:100vh;padding-bottom:110px}
+button{font-family:inherit;cursor:pointer;border:0;background:none;color:inherit}
+input,textarea{font-family:inherit;color:var(--text)}
+.hide{display:none!important}
+/* BREND QISMI */
+.hero{position:relative;overflow:hidden;padding:34px 18px 26px;text-align:center;
+background:radial-gradient(120% 90% at 50% 0%,#2A1E17 0%,#120D0B 55%,var(--bg) 100%);border-bottom:1px solid var(--line)}
+.hero .ghost{position:absolute;width:420px;left:50%;top:50%;transform:translate(-50%,-50%);fill:var(--peach);opacity:.05;pointer-events:none}
+.hero .mark{width:96px;height:auto;fill:var(--peach);display:block;margin:0 auto 14px;filter:drop-shadow(0 6px 24px rgba(250,207,174,.18))}
+.hero .word{width:min(76%,320px);height:auto;fill:var(--peach);display:block;margin:0 auto}
+.hero .tagline{margin-top:12px;color:var(--muted);font-size:12px;letter-spacing:3.5px;text-transform:uppercase;font-weight:500}
+.bonus-pill{position:absolute;right:14px;top:14px;background:rgba(250,207,174,.08);border:1px solid rgba(250,207,174,.25);color:var(--peach);padding:7px 12px;border-radius:999px;font-weight:600;font-size:13px}
+.mode{margin:16px 18px 8px;background:var(--card);border-radius:var(--r);padding:6px;display:grid;grid-template-columns:1fr 1fr;gap:6px;border:1px solid var(--line)}
+.mode button{padding:13px 8px;border-radius:16px;font-weight:600;font-size:15px;color:var(--muted);display:flex;align-items:center;justify-content:center;gap:8px}
+.mode button.on{background:var(--peach);color:var(--peach-ink)}
+.mode-note{margin:2px 22px 6px;font-size:13px;color:var(--muted);font-weight:500}
+.mode-note b{color:var(--text);font-weight:600}
+/* filial tanlash */
+.branch-bar{margin:4px 18px 6px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:12px 14px;display:flex;align-items:center;gap:12px;width:calc(100% - 36px);text-align:left}
+.branch-bar.need{border-color:var(--peach);box-shadow:0 0 0 3px rgba(250,207,174,.12)}
+.branch-bar .ic{width:38px;height:38px;border-radius:12px;background:rgba(250,207,174,.12);display:grid;place-items:center;flex:0 0 auto}
+.branch-bar .t{flex:1;min-width:0}
+.branch-bar small{display:block;color:var(--muted);font-size:12px;font-weight:500}
+.branch-bar b{font-size:16px;font-weight:600}
+.branch-bar .ch{color:var(--peach);font-weight:600;font-size:13px}
+.branches{display:grid;gap:10px;margin-top:6px}
+.br{display:flex;align-items:center;gap:14px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:16px;text-align:left;width:100%}
+.br .rad{width:22px;height:22px;border-radius:50%;border:2px solid #4A3C34;flex:0 0 auto;display:grid;place-items:center}
+.br.on{border-color:var(--peach);background:#1F1712}
+.br.on .rad{border-color:var(--peach)}
+.br.on .rad:after{content:"";width:10px;height:10px;border-radius:50%;background:var(--peach)}
+.br b{display:block;font-size:18px;font-weight:600}
+.br small{color:var(--muted);font-size:13px}
+/* bannerlar */
+.banners{display:flex;gap:12px;overflow-x:auto;padding:10px 18px;scroll-snap-type:x mandatory;scrollbar-width:none}
+.banners::-webkit-scrollbar{display:none}
+.banner{flex:0 0 86%;scroll-snap-align:start;border-radius:var(--r);padding:18px;min-height:150px;position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;border:1px solid var(--line)}
+.banner h3{margin:0;font-size:24px;line-height:1.05;max-width:62%}
+.banner .price{font-size:28px;font-weight:600}
+.banner .old{text-decoration:line-through;opacity:.65;font-size:15px;margin-left:6px}
+.banner p{margin:6px 0 0;font-size:13px;opacity:.85;max-width:62%}
+.banner svg.art{position:absolute;right:-8px;bottom:-8px;width:46%;height:auto}
+.banner svg.mk{position:absolute;right:-26px;top:-18px;width:44%;fill:currentColor;opacity:.14}
+/* qidiruv, kategoriya */
+.search{margin:8px 18px;background:var(--card);border:1px solid var(--line);border-radius:18px;display:flex;align-items:center;gap:10px;padding:12px 14px}
+.search input{border:0;outline:0;font-size:15px;width:100%;background:transparent}
+.search input::placeholder,.f input::placeholder,.f textarea::placeholder{color:#6F6058}
+.cats{display:flex;gap:8px;overflow-x:auto;padding:8px 18px 4px;scrollbar-width:none}
+.cats::-webkit-scrollbar{display:none}
+.cat{flex:0 0 auto;padding:10px 14px;border-radius:999px;background:var(--card);border:1px solid var(--line);font-weight:500;font-size:14px;white-space:nowrap;color:var(--text)}
+.cat.on{background:var(--peach);color:var(--peach-ink);border-color:var(--peach)}
+h2.sec{margin:20px 18px 10px;font-size:26px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:0 18px}
+.p{background:var(--card);border-radius:var(--r);padding:10px;border:1px solid var(--line);display:flex;flex-direction:column;text-align:left}
+.p .img{aspect-ratio:1;border-radius:16px;overflow:hidden;position:relative;background:var(--card-2)}
+.p .img svg{width:100%;height:100%;display:block}
+.tag{position:absolute;left:8px;top:8px;background:var(--peach);color:var(--peach-ink);font-weight:700;font-size:11px;padding:4px 8px;border-radius:999px}
+.p .name{font-weight:500;font-size:14px;margin:10px 2px 2px;line-height:1.25;min-height:35px}
+.p .unit{font-size:12px;color:var(--muted);margin:0 2px}
+.p .row{display:flex;align-items:center;justify-content:space-between;margin-top:8px}
+.p .pr{font-weight:600;font-size:15px}
+.p .pr s{display:block;font-size:11px;color:var(--muted);font-weight:400}
+.add{width:36px;height:36px;border-radius:12px;background:var(--peach);color:var(--peach-ink);font-size:22px;font-weight:600;display:grid;place-items:center}
+.stepper{display:flex;align-items:center;gap:6px;background:var(--card-2);border:1px solid var(--line);border-radius:12px;padding:3px}
+.stepper button{width:30px;height:30px;border-radius:10px;background:#2B231E;font-weight:600;font-size:17px}
+.stepper span{min-width:18px;text-align:center;font-weight:600;font-size:14px}
+.empty{padding:40px 24px;text-align:center;color:var(--muted);font-weight:500}
+/* pastki menyu */
+.nav{position:fixed;left:50%;transform:translateX(-50%);bottom:14px;width:calc(100% - 28px);max-width:492px;z-index:20}
+.nav .bar{background:rgba(22,18,15,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--line);border-radius:999px;display:grid;grid-template-columns:repeat(4,1fr);padding:6px}
+.nav .bar button{color:#8C7B73;font-size:11px;font-weight:500;padding:8px 2px;border-radius:999px;display:flex;flex-direction:column;align-items:center;gap:3px;position:relative}
+.nav .bar button.on{background:var(--peach);color:var(--peach-ink)}
+.badge{position:absolute;top:2px;right:18%;background:#E9AE86;color:var(--peach-ink);font-size:10px;font-weight:700;min-width:18px;height:18px;border-radius:9px;display:grid;place-items:center;padding:0 4px}
+/* oyna (sheet) */
+.veil{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:30;opacity:0;pointer-events:none;transition:.2s}
+.veil.show{opacity:1;pointer-events:auto}
+.sheet{position:fixed;left:50%;bottom:0;transform:translate(-50%,100%);width:100%;max-width:520px;background:#100C0A;border-top:1px solid var(--line);border-radius:28px 28px 0 0;z-index:31;max-height:92vh;overflow-y:auto;transition:transform .25s ease;padding:10px 18px 28px}
+.sheet.show{transform:translate(-50%,0)}
+.grab{width:44px;height:5px;border-radius:3px;background:#3A2F29;margin:4px auto 12px}
+.sheet .big{border-radius:var(--r);overflow:hidden;aspect-ratio:16/11;background:var(--card-2)}
+.sheet .big svg{width:100%;height:100%}
+.sheet h3{font-size:30px;margin:14px 0 4px}
+.sheet .desc{color:var(--muted);font-size:14px;line-height:1.5;margin:0 0 12px}
+.buyrow{display:flex;gap:10px;align-items:center;margin-top:8px}
+.buyrow .stepper{padding:6px}
+.buyrow .stepper button{width:38px;height:38px}
+.primary{flex:1;background:var(--peach);color:var(--peach-ink);font-weight:600;font-size:16px;padding:16px;border-radius:18px}
+.primary:disabled{opacity:.4}
+.with{margin-top:20px}
+.with h4{margin:0 0 10px;font-size:15px;font-weight:600}
+.mini{display:flex;gap:10px;overflow-x:auto;scrollbar-width:none}
+.mini::-webkit-scrollbar{display:none}
+.mini .m{flex:0 0 132px;background:var(--card);border:1px solid var(--line);border-radius:18px;padding:8px;text-align:left}
+.mini .m .i{aspect-ratio:1;border-radius:12px;overflow:hidden;background:var(--card-2)}
+.mini .m .i svg{width:100%;height:100%}
+.mini .m .n{font-size:12px;font-weight:500;margin:6px 2px 2px;line-height:1.2;min-height:29px}
+.mini .m .r{display:flex;justify-content:space-between;align-items:center;font-size:13px;font-weight:600;margin:4px 2px 0}
+.mini .m .r .add{width:28px;height:28px;font-size:18px;border-radius:9px}
+/* sahifalar */
+.page{padding:6px 18px}
+.page h1{font-size:34px;margin:18px 0 12px}
+.page h1,h2.sec,.sheet h3,.banner h3,.done h1{font-family:var(--serif);font-weight:700;letter-spacing:0}
+.line{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:10px;display:flex;gap:12px;align-items:center;margin-bottom:10px}
+.line .i{width:64px;height:64px;border-radius:14px;overflow:hidden;flex:0 0 auto;background:var(--card-2)}
+.line .i svg{width:100%;height:100%}
+.line .t{flex:1;min-width:0}
+.line .t b{display:block;font-size:14px;line-height:1.25;font-weight:500}
+.line .t small{color:var(--muted)}
+.progress{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:14px;margin:6px 0 12px}
+.progress p{margin:0 0 8px;font-size:13px;font-weight:500}
+.track{height:8px;background:#2B231E;border-radius:4px;overflow:hidden}
+.track i{display:block;height:100%;background:linear-gradient(90deg,#B9785A,var(--peach));border-radius:4px}
+.sum{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:14px;margin:12px 0}
+.sum div{display:flex;justify-content:space-between;font-size:14px;padding:5px 0}
+.sum div.tot{font-size:18px;font-weight:600;border-top:1px dashed #3A2F29;margin-top:6px;padding-top:10px}
+.sum .g{color:var(--ok)}
+.f{margin-bottom:14px}
+.f label{display:block;font-size:13px;font-weight:500;color:var(--muted);margin:0 0 6px 4px}
+.f input,.f textarea{width:100%;border:1px solid var(--line);background:var(--card);border-radius:16px;padding:14px;font-size:15px;outline:0}
+.f input:focus,.f textarea:focus{border-color:var(--peach)}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chips button{padding:11px 14px;border-radius:14px;background:var(--card);border:1px solid var(--line);font-weight:500;font-size:14px}
+.chips button.on{border-color:var(--peach);background:#1F1712;color:var(--peach)}
+.err{color:var(--err);font-size:13px;font-weight:500;margin:4px 4px 10px;min-height:1px}
+.order{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:14px;margin-bottom:10px}
+.order .h{display:flex;justify-content:space-between;align-items:center}
+.order .h b{font-size:16px;font-weight:600}
+.st{font-size:12px;font-weight:600;padding:5px 10px;border-radius:999px;background:rgba(250,207,174,.12);color:var(--peach)}
+.order p{margin:8px 0 0;font-size:13px;color:var(--muted);line-height:1.5}
+.done{text-align:center;padding:40px 10px}
+.done .ok{width:84px;height:84px;border-radius:50%;background:var(--peach);display:grid;place-items:center;margin:0 auto 16px}
+.done .ok svg{stroke:var(--peach-ink)}
+.done h1{margin:0 0 8px;font-size:34px}
+.done p{color:var(--muted);line-height:1.5}
+.profile-card{background:linear-gradient(140deg,#FACFAE,#E3A47C);color:var(--peach-ink);border-radius:var(--r);padding:18px;margin-bottom:12px;position:relative;overflow:hidden}
+.profile-card svg{position:absolute;right:-30px;top:-20px;width:150px;fill:var(--peach-ink);opacity:.1}
+.profile-card .b{font-size:32px;font-weight:600;margin-top:6px}
+.profile-card small{opacity:.75}
+.info{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:4px 14px;margin-bottom:12px}
+.info div{padding:12px 0;border-bottom:1px solid var(--line);font-size:14px;display:flex;justify-content:space-between;gap:10px}
+.info div:last-child{border:0}
+.info span{color:var(--muted)}
+.toast{position:fixed;left:50%;bottom:96px;transform:translateX(-50%) translateY(20px);background:var(--peach);color:var(--peach-ink);padding:12px 18px;border-radius:999px;font-weight:600;font-size:14px;opacity:0;transition:.2s;z-index:40;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+/* QR tugma (menyu markazida) */
+.nav .bar{grid-template-columns:1fr 1fr 76px 1fr 1fr !important;align-items:center}
+.nav .bar .qr-btn{width:64px;height:64px;margin:-26px auto 0;border-radius:50%;background:var(--peach);color:var(--peach-ink);display:grid;place-items:center;padding:0;
+box-shadow:0 0 0 6px var(--bg),0 8px 24px rgba(250,207,174,.25)}
+.nav .bar .qr-btn.on{background:#fff}
+.nav .bar .qr-btn svg{width:30px;height:30px}
+/* QR sahifasi */
+.qr-page{text-align:center}
+.qr-card{background:#fff;border-radius:28px;padding:22px 22px 18px;margin:8px auto 0;max-width:340px;position:relative}
+.qr-card .qr{width:100%;aspect-ratio:1;display:block;position:relative}
+#qrBox svg{width:100%;height:100%;display:block}
+.qr-card .cid{color:#1A120D;font-weight:600;letter-spacing:2px;font-size:15px;margin-top:10px}
+.qr-mark{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:58px;height:58px;border-radius:16px;background:#1A120D;display:grid;place-items:center;box-shadow:0 0 0 5px #fff}
+.qr-mark svg{width:36px;fill:var(--peach)}
+.timer{display:flex;align-items:center;justify-content:center;gap:10px;margin:16px 0 4px;color:var(--muted);font-size:14px}
+.timer svg{width:28px;height:28px;transform:rotate(-90deg)}
+.timer b{color:var(--text);font-variant-numeric:tabular-nums;font-weight:600}
+.cb-card{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:16px;margin:16px 0 12px;display:flex;justify-content:space-between;align-items:center;text-align:left}
+.cb-card small{color:var(--muted);display:block;font-size:12px}
+.cb-card b{font-size:24px;font-weight:600;color:var(--peach)}
+.cb-card .pct{background:rgba(250,207,174,.12);color:var(--peach);font-weight:700;font-size:20px;border-radius:16px;padding:10px 14px}
+.howto{background:var(--card);border:1px solid var(--line);border-radius:22px;padding:6px 16px;text-align:left}
+.howto div{display:flex;gap:12px;align-items:flex-start;padding:11px 0;border-bottom:1px solid var(--line);font-size:14px;line-height:1.4}
+.howto div:last-child{border:0}
+.howto i{font-style:normal;flex:0 0 26px;height:26px;border-radius:50%;background:var(--peach);color:var(--peach-ink);display:grid;place-items:center;font-weight:700;font-size:13px}
+</style>
+</head>
+<body>
+<!-- ===== ASOSIY ===== -->
+<section id="v-home">
+<header class="hero">
+<svg class="ghost" viewBox="345 228 386 442"><path fill-rule="evenodd" d="M586.5,406.5 C583.7,395.4 582.7,385.1 582.7,374.9 C582.7,322.8 615.3,273.5 663.8,254.0 L664.7,254.0 L664.7,254.9 C667.5,265.1 668.4,275.4 668.4,285.6 C668.4,337.7 635.8,386.1 586.5,406.5 Z Z M488.7,405.6 L487.7,406.5 C439.3,386.1 406.7,337.7 406.7,285.6 C406.7,275.4 407.6,265.2 410.4,254.9 L410.4,254.0 L411.3,254.0 C459.8,274.4 492.4,322.8 492.4,374.9 C492.4,386.1 490.5,396.3 488.7,405.6 Z Z M714.1,507.0 C658.2,507.0 606.0,469.8 589.3,415.8 L589.3,414.9 L590.2,414.9 C642.3,393.5 677.8,341.4 677.8,285.6 C677.8,272.6 675.9,259.6 672.2,247.5 L671.2,242.8 L666.6,244.7 C611.6,265.1 574.4,317.2 574.4,375.8 C574.4,387.0 575.3,398.2 578.1,409.3 L578.1,410.3 L577.1,410.3 C551.1,418.6 522.2,418.6 496.1,410.3 L495.2,410.3 L495.2,409.3 C498.0,398.2 498.9,387.0 498.9,375.8 C498.9,317.3 461.6,264.2 406.7,244.7 L402.0,242.8 L403.0,247.5 C399.3,259.6 397.4,272.6 397.4,285.6 C397.4,342.4 432.8,394.4 484.9,414.9 L485.9,414.9 L485.9,415.8 C468.2,468.9 417.0,507.0 361.1,507.0 L360.1,507.0 L360.1,515.4 L361.1,515.4 C420.7,515.4 475.6,475.4 494.3,418.6 L494.3,417.7 L495.2,417.7 C523.1,426.1 552.9,426.1 580.9,417.7 L581.8,417.7 L581.8,418.6 C600.4,475.4 655.4,515.4 715.0,515.4 L715.9,515.4 L714.1,507.0 Z"/><path fill-rule="evenodd" d="M488.7,489.3 C491.4,500.5 492.4,510.7 492.4,521.0 C492.4,573.0 459.8,622.3 411.3,641.9 L410.4,641.9 L410.4,640.9 C407.6,630.7 406.7,620.5 406.7,610.2 C406.7,559.1 439.3,509.8 488.7,489.3 Z Z M586.5,490.2 L587.4,489.3 C635.8,509.8 668.4,558.1 668.4,610.2 C668.4,620.5 667.5,630.7 664.7,640.9 L664.7,641.9 L663.8,641.9 C615.3,621.4 582.7,573.0 582.7,521.0 C582.7,510.7 584.6,500.5 586.5,490.2 Z Z M361.1,389.8 C417.0,389.8 469.1,427.0 485.9,481.0 L485.9,481.9 L484.9,481.9 C432.8,503.3 397.4,555.4 397.4,611.2 C397.4,624.2 399.2,637.2 403.0,649.3 L403.9,654.0 L408.6,652.1 C463.5,631.7 500.8,579.6 500.8,521.0 C500.8,509.8 499.8,498.6 497.1,487.5 L497.1,486.5 L498.0,486.5 C524.1,478.2 552.9,478.2 579.0,486.5 L580.0,486.5 L580.0,487.5 C577.2,498.6 576.2,509.8 576.2,521.0 C576.2,579.5 613.5,632.6 668.4,652.1 L673.1,654.0 L674.0,649.3 C677.8,637.2 679.6,624.2 679.6,611.2 C679.6,554.4 644.2,502.4 592.1,481.9 L591.1,481.9 L591.1,481.0 C608.8,427.9 660.1,389.8 715.9,389.8 L716.9,389.8 L716.9,381.4 L715.9,381.4 C656.3,381.4 601.4,421.4 582.8,478.2 L582.8,479.1 L581.8,479.1 C553.9,470.7 524.1,470.7 496.1,479.1 L495.2,479.1 L495.2,478.2 C476.6,421.4 421.6,381.4 362.0,381.4 L361.1,381.4 L361.1,389.8 L361.1,389.8 Z"/></svg>
+<button class="bonus-pill" onclick="go('profile')">★ <span id="bonusTop">0</span></button>
+<svg class="mark" viewBox="345 228 386 442" aria-hidden="true"><path fill-rule="evenodd" d="M586.5,406.5 C583.7,395.4 582.7,385.1 582.7,374.9 C582.7,322.8 615.3,273.5 663.8,254.0 L664.7,254.0 L664.7,254.9 C667.5,265.1 668.4,275.4 668.4,285.6 C668.4,337.7 635.8,386.1 586.5,406.5 Z Z M488.7,405.6 L487.7,406.5 C439.3,386.1 406.7,337.7 406.7,285.6 C406.7,275.4 407.6,265.2 410.4,254.9 L410.4,254.0 L411.3,254.0 C459.8,274.4 492.4,322.8 492.4,374.9 C492.4,386.1 490.5,396.3 488.7,405.6 Z Z M714.1,507.0 C658.2,507.0 606.0,469.8 589.3,415.8 L589.3,414.9 L590.2,414.9 C642.3,393.5 677.8,341.4 677.8,285.6 C677.8,272.6 675.9,259.6 672.2,247.5 L671.2,242.8 L666.6,244.7 C611.6,265.1 574.4,317.2 574.4,375.8 C574.4,387.0 575.3,398.2 578.1,409.3 L578.1,410.3 L577.1,410.3 C551.1,418.6 522.2,418.6 496.1,410.3 L495.2,410.3 L495.2,409.3 C498.0,398.2 498.9,387.0 498.9,375.8 C498.9,317.3 461.6,264.2 406.7,244.7 L402.0,242.8 L403.0,247.5 C399.3,259.6 397.4,272.6 397.4,285.6 C397.4,342.4 432.8,394.4 484.9,414.9 L485.9,414.9 L485.9,415.8 C468.2,468.9 417.0,507.0 361.1,507.0 L360.1,507.0 L360.1,515.4 L361.1,515.4 C420.7,515.4 475.6,475.4 494.3,418.6 L494.3,417.7 L495.2,417.7 C523.1,426.1 552.9,426.1 580.9,417.7 L581.8,417.7 L581.8,418.6 C600.4,475.4 655.4,515.4 715.0,515.4 L715.9,515.4 L714.1,507.0 Z"/><path fill-rule="evenodd" d="M488.7,489.3 C491.4,500.5 492.4,510.7 492.4,521.0 C492.4,573.0 459.8,622.3 411.3,641.9 L410.4,641.9 L410.4,640.9 C407.6,630.7 406.7,620.5 406.7,610.2 C406.7,559.1 439.3,509.8 488.7,489.3 Z Z M586.5,490.2 L587.4,489.3 C635.8,509.8 668.4,558.1 668.4,610.2 C668.4,620.5 667.5,630.7 664.7,640.9 L664.7,641.9 L663.8,641.9 C615.3,621.4 582.7,573.0 582.7,521.0 C582.7,510.7 584.6,500.5 586.5,490.2 Z Z M361.1,389.8 C417.0,389.8 469.1,427.0 485.9,481.0 L485.9,481.9 L484.9,481.9 C432.8,503.3 397.4,555.4 397.4,611.2 C397.4,624.2 399.2,637.2 403.0,649.3 L403.9,654.0 L408.6,652.1 C463.5,631.7 500.8,579.6 500.8,521.0 C500.8,509.8 499.8,498.6 497.1,487.5 L497.1,486.5 L498.0,486.5 C524.1,478.2 552.9,478.2 579.0,486.5 L580.0,486.5 L580.0,487.5 C577.2,498.6 576.2,509.8 576.2,521.0 C576.2,579.5 613.5,632.6 668.4,652.1 L673.1,654.0 L674.0,649.3 C677.8,637.2 679.6,624.2 679.6,611.2 C679.6,554.4 644.2,502.4 592.1,481.9 L591.1,481.9 L591.1,481.0 C608.8,427.9 660.1,389.8 715.9,389.8 L716.9,389.8 L716.9,381.4 L715.9,381.4 C656.3,381.4 601.4,421.4 582.8,478.2 L582.8,479.1 L581.8,479.1 C553.9,470.7 524.1,470.7 496.1,479.1 L495.2,479.1 L495.2,478.2 C476.6,421.4 421.6,381.4 362.0,381.4 L361.1,381.4 L361.1,389.8 L361.1,389.8 Z"/></svg>
+<svg class="word" viewBox="128 712 824 128" role="img" aria-label="Monand"><path fill-rule="evenodd" d="M276.3,721.5 C272.5,721.5 270.0,722.7 268.8,725.2 C267.5,726.5 266.2,730.3 266.2,734.0 L266.2,775.5 L266.2,817.0 C266.2,822.0 267.5,824.5 268.8,825.8 C270.0,827.0 272.5,828.3 276.3,828.3 L278.8,828.3 L278.8,830.8 L249.9,830.8 L234.8,830.8 L234.8,828.3 L237.3,828.3 C241.1,828.3 243.6,827.0 244.9,825.8 C246.1,824.5 247.4,820.7 247.4,817.0 L247.4,775.5 L247.4,730.3 L205.8,833.3 L203.3,833.3 L153.0,740.3 L153.0,775.5 L153.0,817.0 C153.0,820.7 154.2,824.5 156.8,825.7 C159.3,827.0 161.8,828.3 166.8,829.5 L169.3,829.5 L169.3,832.0 L151.7,832.0 L132.9,832.0 L132.9,829.5 L135.4,829.5 C139.2,829.5 142.9,828.3 145.4,825.7 C148.0,824.5 149.2,820.7 149.2,817.0 L149.2,775.5 L149.2,734.0 C149.2,730.2 148.0,726.5 145.4,725.2 C142.9,724.0 140.4,722.7 136.6,721.4 L134.1,721.4 L134.1,718.9 L163.1,718.9 L210.9,806.9 L247.4,718.9 L280.1,718.9 L280.1,721.4 C277.6,721.5 276.3,721.5 276.3,721.5 Z"/><path fill-rule="evenodd" d="M331.7,815.7 C339.2,825.7 348.0,832.0 359.4,832.0 C370.7,832.0 379.5,827.0 387.1,817.0 C394.6,806.9 398.4,793.1 398.4,776.8 C398.4,760.4 394.6,747.9 388.3,736.6 C380.8,726.5 372.0,720.2 360.6,720.2 C348.1,720.2 339.2,725.3 331.7,736.6 C324.1,746.6 320.4,760.4 321.6,776.8 C320.4,791.8 324.1,804.4 331.7,815.7 Z Z M358.1,837.1 C340.5,837.1 326.6,830.8 315.3,819.5 C304.0,808.2 299.0,794.4 299.0,776.8 C299.0,759.2 304.0,745.3 315.3,734.0 C326.7,722.7 340.5,717.7 359.4,717.7 C378.3,717.7 393.4,722.7 403.4,734.0 C414.8,745.3 419.8,759.1 419.8,776.8 C419.8,794.3 413.5,809.4 402.2,820.7 C389.6,830.8 375.7,837.1 358.1,837.1 Z"/><path fill-rule="evenodd" d="M609.8,784.3 C612.3,785.5 616.1,786.8 622.4,786.8 C629.9,786.8 635.0,788.1 636.2,789.3 L616.1,740.3 L606.0,764.2 C603.5,774.2 604.8,780.5 609.8,784.3 Z Z M671.5,817.0 C675.2,825.7 680.3,830.8 686.6,830.8 L686.6,833.3 L679.0,833.3 L671.5,833.3 L655.1,833.3 L638.7,833.3 L638.7,830.8 C642.5,830.8 646.3,829.5 647.5,827.0 C648.8,824.5 648.8,820.7 647.5,815.7 L646.3,811.9 C642.5,803.1 640.0,798.1 636.2,794.3 C632.4,791.8 626.2,789.3 618.6,789.3 C612.3,789.3 607.3,788.0 604.8,785.5 C602.3,784.3 601.0,781.7 599.7,780.5 L584.6,818.2 C583.4,823.2 583.4,825.7 587.2,828.2 C590.9,830.7 593.5,830.7 598.5,830.7 L598.5,833.2 L587.2,833.2 L575.8,833.2 L569.5,833.2 L563.2,833.2 L563.2,830.7 C572.0,829.5 577.1,825.7 580.8,818.1 C584.6,808.1 590.9,794.3 598.5,776.7 C606.0,759.1 611.0,745.3 616.1,732.7 L623.6,715.1 L628.7,715.1 L671.5,817.0 Z"/><path fill-rule="evenodd" d="M798.5,718.9 L816.2,718.9 L816.2,721.5 L813.6,721.5 C811.1,721.5 809.9,722.7 808.6,722.7 C807.3,722.7 806.1,724.0 804.8,724.0 C803.6,725.2 802.3,725.2 802.3,727.7 C801.0,729.0 801.0,731.5 801.0,732.8 L801.0,775.5 L801.0,833.3 L798.5,833.3 L718.0,742.8 L718.0,775.5 L718.0,817.0 C718.0,820.8 719.2,824.5 721.8,825.8 C724.3,827.0 726.8,828.3 730.6,828.3 L733.1,828.3 L733.1,830.8 L714.2,830.8 L697.9,830.8 L697.9,828.3 L700.4,828.3 C702.9,828.3 705.4,827.0 706.7,827.0 C708.0,827.0 709.2,825.8 710.5,823.2 C711.7,822.0 713.0,819.5 713.0,815.7 L713.0,774.2 C713.0,757.9 713.0,745.3 711.7,736.5 C709.2,732.8 705.4,729.0 700.4,725.2 C695.4,721.4 691.6,718.9 689.1,718.9 L689.1,716.4 L720.5,716.4 C724.3,718.9 730.6,725.2 739.4,734.0 L797.3,800.6 L797.3,789.3 L797.3,773.0 L797.3,730.2 C797.3,727.7 797.3,726.4 796.1,725.2 C794.8,723.9 794.8,722.7 793.5,721.4 C792.3,720.2 791.0,720.2 789.8,720.2 C788.5,720.2 787.2,720.2 784.7,718.9 L782.2,718.9 L782.2,716.4 C788.5,718.9 793.5,718.9 798.5,718.9 Z"/><path fill-rule="evenodd" d="M925.6,775.5 C925.6,760.4 923.1,747.9 915.6,739.1 C909.3,730.3 900.5,725.2 889.2,724.0 C881.6,722.7 874.0,722.7 866.5,724.0 L866.5,776.8 L866.5,801.9 L866.5,820.7 C866.5,824.5 867.8,827.0 869.0,829.5 C870.3,830.8 874.1,832.0 877.8,832.0 C890.4,833.3 900.5,829.5 908.0,823.2 C918.1,811.9 924.4,796.9 925.6,775.5 Z Z M896.7,718.9 C913.1,720.2 925.6,726.5 934.5,735.3 C943.3,745.3 947.0,757.9 947.0,774.2 C947.0,795.6 939.5,811.9 926.9,820.7 C921.9,824.5 918.1,827.0 913.1,828.3 C908.0,829.5 901.7,830.8 894.2,832.0 L859.0,832.0 L832.5,832.0 L832.5,829.5 L835.1,829.5 C838.8,829.5 841.4,828.3 843.9,827.0 C845.1,825.8 846.4,822.0 846.4,817.0 L846.4,774.2 L846.4,732.8 C846.4,727.7 845.1,725.2 843.9,722.7 C842.6,721.5 840.1,720.2 835.1,720.2 L832.5,720.2 L832.5,717.7 L853.9,717.7 L874.1,717.7 C887.9,718.9 895.4,718.9 896.7,718.9 Z"/><path fill-rule="evenodd" d="M541.8,718.9 L559.5,718.9 L559.5,721.5 L556.9,721.5 C554.4,721.5 553.1,722.7 551.9,722.7 C550.6,722.7 549.4,724.0 548.1,724.0 C546.9,725.2 545.6,725.2 545.6,727.7 C544.3,729.0 544.3,731.5 544.3,732.8 L544.3,775.5 L544.3,833.3 L541.8,833.3 L461.3,742.8 L461.3,775.5 L461.3,817.0 C461.3,820.8 462.5,824.5 465.1,825.8 C467.6,827.0 470.1,828.3 473.9,828.3 L476.4,828.3 L476.4,830.8 L457.5,830.8 L441.1,830.8 L441.1,828.3 L443.7,828.3 C446.2,828.3 448.7,827.0 450.0,827.0 C451.2,827.0 452.5,825.8 453.8,823.2 C455.0,822.0 456.3,819.5 456.3,815.7 L456.3,774.2 C456.3,757.9 456.3,745.3 455.0,736.5 C452.5,732.8 448.7,729.0 443.7,725.2 C438.7,721.4 434.9,718.9 432.4,718.9 L432.4,716.4 L463.8,716.4 C463.8,716.4 473.9,725.2 482.7,734.0 L540.6,800.6 L540.6,789.3 L540.6,773.0 L540.6,730.2 C540.6,727.7 540.6,726.4 539.4,725.2 C538.1,723.9 538.1,722.7 536.8,721.4 C535.6,720.2 534.3,720.2 533.1,720.2 C531.8,720.2 530.5,720.2 528.0,718.9 L525.5,718.9 L525.5,716.4 C531.8,718.9 536.8,718.9 541.8,718.9 Z"/></svg>
+<div class="tagline">Furnitura va tikuv mahsulotlari</div>
+</header>
+<div class="mode">
+<button id="m-delivery" onclick="setMode('delivery')">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7h11v9H3zM14 10h4l3 3v3h-7"/><circle cx="7" cy="18" r="1.8"/><circle cx="17.5" cy="18" r="1.8"/></svg>Yetkazib berish</button>
+<button id="m-pickup" onclick="setMode('pickup')">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 9l1.5-5h13L20 9M4 9v11h16V9M4 9h16M9 20v-6h6v6"/></svg>Olib ketaman</button>
+</div>
+<div class="mode-note" id="modeNote"></div>
+<button class="branch-bar hide" id="branchBar" onclick="openBranches()"></button>
+<div class="banners" id="banners"></div>
+<div class="search">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#A3918A" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>
+<input id="q" placeholder="ip, zamok, rezinka, flizelin, dublerin, qaychi..." oninput="renderGrid()">
+</div>
+<div class="cats" id="cats"></div>
+<h2 class="sec" id="secTitle">Ko'p sotiladigan</h2>
+<div class="grid" id="grid"></div>
+</section>
+<!-- ===== SAVAT ===== -->
+<section id="v-cart" class="page hide"></section>
+<!-- ===== RASMIYLASHTIRISH ===== -->
+<section id="v-checkout" class="page hide"></section>
+<!-- ===== BUYURTMALAR ===== -->
+<section id="v-orders" class="page hide"></section>
+<!-- ===== PROFIL ===== -->
+<section id="v-profile" class="page hide"></section>
+<!-- ===== QR KOD ===== -->
+<section id="v-qr" class="page qr-page hide"></section>
+<!-- ===== TAYYOR ===== -->
+<section id="v-done" class="page hide"></section>
+<nav class="nav">
+<div class="bar">
+<button data-v="home" onclick="go('home')"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3l9 7.5V21h-6v-6H9v6H3V10.5z"/></svg>Asosiy</button>
+<button data-v="catalog" onclick="go('home');document.getElementById('cats').scrollIntoView({behavior:'smooth',block:'center'})"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="8" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/><rect x="13" y="13" width="8" height="8" rx="2"/></svg>Katalog</button>
+<button class="qr-btn" data-v="qr" onclick="go('qr')" aria-label="Mening QR kodim"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 3h7v7H3zm2 2v3h3V5zm9-2h7v7h-7zm2 2v3h3V5zM3 14h7v7H3zm2 2v3h3v-3zm8-2h3v3h-3zm3 3h2v2h-2zm2-3h3v3h-3zm-5 5h3v2h-3zm5 0h3v2h-3z"/></svg></button>
+<button data-v="cart" onclick="go('cart')"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M3 4h2.5l2.2 11.2a2 2 0 0 0 2 1.6h7.6a2 2 0 0 0 2-1.5L21 8H6.3"/><circle cx="10" cy="20.5" r="1.5"/><circle cx="17" cy="20.5" r="1.5"/></svg>Savat<span class="badge hide" id="cartBadge">0</span></button>
+<button data-v="orders" onclick="go('orders')"><svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><path d="M6 2h9l5 5v13a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm2 9v2h8v-2zm0 4v2h6v-2z"/></svg>Buyurtmalar</button>
+</div>
+</nav>
+<div class="veil" id="veil" onclick="closeSheet()"></div>
+<div class="sheet" id="sheet"></div>
+<div class="toast" id="toast"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script>
+const MONAND_MARK = `<path fill-rule="evenodd" d="M586.5,406.5 C583.7,395.4 582.7,385.1 582.7,374.9 C582.7,322.8 615.3,273.5 663.8,254.0 L664.7,254.0 L664.7,254.9 C667.5,265.1 668.4,275.4 668.4,285.6 C668.4,337.7 635.8,386.1 586.5,406.5 Z Z M488.7,405.6 L487.7,406.5 C439.3,386.1 406.7,337.7 406.7,285.6 C406.7,275.4 407.6,265.2 410.4,254.9 L410.4,254.0 L411.3,254.0 C459.8,274.4 492.4,322.8 492.4,374.9 C492.4,386.1 490.5,396.3 488.7,405.6 Z Z M714.1,507.0 C658.2,507.0 606.0,469.8 589.3,415.8 L589.3,414.9 L590.2,414.9 C642.3,393.5 677.8,341.4 677.8,285.6 C677.8,272.6 675.9,259.6 672.2,247.5 L671.2,242.8 L666.6,244.7 C611.6,265.1 574.4,317.2 574.4,375.8 C574.4,387.0 575.3,398.2 578.1,409.3 L578.1,410.3 L577.1,410.3 C551.1,418.6 522.2,418.6 496.1,410.3 L495.2,410.3 L495.2,409.3 C498.0,398.2 498.9,387.0 498.9,375.8 C498.9,317.3 461.6,264.2 406.7,244.7 L402.0,242.8 L403.0,247.5 C399.3,259.6 397.4,272.6 397.4,285.6 C397.4,342.4 432.8,394.4 484.9,414.9 L485.9,414.9 L485.9,415.8 C468.2,468.9 417.0,507.0 361.1,507.0 L360.1,507.0 L360.1,515.4 L361.1,515.4 C420.7,515.4 475.6,475.4 494.3,418.6 L494.3,417.7 L495.2,417.7 C523.1,426.1 552.9,426.1 580.9,417.7 L581.8,417.7 L581.8,418.6 C600.4,475.4 655.4,515.4 715.0,515.4 L715.9,515.4 L714.1,507.0 Z"/><path fill-rule="evenodd" d="M488.7,489.3 C491.4,500.5 492.4,510.7 492.4,521.0 C492.4,573.0 459.8,622.3 411.3,641.9 L410.4,641.9 L410.4,640.9 C407.6,630.7 406.7,620.5 406.7,610.2 C406.7,559.1 439.3,509.8 488.7,489.3 Z Z M586.5,490.2 L587.4,489.3 C635.8,509.8 668.4,558.1 668.4,610.2 C668.4,620.5 667.5,630.7 664.7,640.9 L664.7,641.9 L663.8,641.9 C615.3,621.4 582.7,573.0 582.7,521.0 C582.7,510.7 584.6,500.5 586.5,490.2 Z Z M361.1,389.8 C417.0,389.8 469.1,427.0 485.9,481.0 L485.9,481.9 L484.9,481.9 C432.8,503.3 397.4,555.4 397.4,611.2 C397.4,624.2 399.2,637.2 403.0,649.3 L403.9,654.0 L408.6,652.1 C463.5,631.7 500.8,579.6 500.8,521.0 C500.8,509.8 499.8,498.6 497.1,487.5 L497.1,486.5 L498.0,486.5 C524.1,478.2 552.9,478.2 579.0,486.5 L580.0,486.5 L580.0,487.5 C577.2,498.6 576.2,509.8 576.2,521.0 C576.2,579.5 613.5,632.6 668.4,652.1 L673.1,654.0 L674.0,649.3 C677.8,637.2 679.6,624.2 679.6,611.2 C679.6,554.4 644.2,502.4 592.1,481.9 L591.1,481.9 L591.1,481.0 C608.8,427.9 660.1,389.8 715.9,389.8 L716.9,389.8 L716.9,381.4 L715.9,381.4 C656.3,381.4 601.4,421.4 582.8,478.2 L582.8,479.1 L581.8,479.1 C553.9,470.7 524.1,470.7 496.1,479.1 L495.2,479.1 L495.2,478.2 C476.6,421.4 421.6,381.4 362.0,381.4 L361.1,381.4 L361.1,389.8 L361.1,389.8 Z"/>`;
+/* =========================================================
+SOZLAMALAR — shu yerni o'zgartirasiz
+========================================================= */
+const CONFIG = {
+shopName: "Monand",
+orderTo: "SHOJALIL",                       // buyurtmalar keladigan Telegram username (@ belgisisiz)
+pickupPoints: [                            // olib ketish filiallari
+{id:"3-6-11",     name:"3-6-11",     note:""},
+{id:"A-113",      name:"A-113",      note:""},
+{id:"Olimpolvon", name:"Olimpolvon", note:""}
+],
+freeDeliveryFrom: 500000,                  // shu summadan oshsa yetkazish bepul
+deliveryFee: 25000,                        // oddiy yetkazish narxi
+bonusPercent: 3,                           // ilova orqali buyurtmadan bonus foizi
+storeCashbackPercent: 1,                   // do'konda QR ko'rsatganda cashback foizi
+qrRefreshSeconds: 60,                      // QR har necha soniyada yangilanadi
+payments: ["Naqd", "Click", "Payme", "Karta (terminal)"]
+};
+const CATS = [
+{id:"all", name:"Hammasi"},
+{id:"set", name:"🎁 Komplektlar"},
+{id:"thread", name:"Iplar"},
+{id:"zip", name:"Zamoklar"},
+{id:"elastic", name:"Rezinkalar"},
+{id:"interfacing", name:"Flizelin · Dublerin"},
+{id:"hardware", name:"Tugma va furnitura"},
+{id:"tools", name:"Qaychi va asboblar"}
+];
+/* NAMUNAVIY mahsulotlar — haqiqiylari bilan almashtiriladi.
+with: "Bu bilan birga oladi" — chekni ko'tarish uchun */
+const PRODUCTS = [
+{id:1, cat:"set", name:"Boshlovchi tikuvchi seti", unit:"to'plam", price:149000, old:180000, hit:true, kind:"set", c:"#8C4A3A", c2:"#E9B88E",
+desc:"Qaychi, santimetr, igna to'plami, bo'r, bulavka va 5 xil rangdagi ip — boshlash uchun hammasi.", with:[3,10,22]},
+{id:2, cat:"set", name:"Ustaxona to'plami", unit:"to'plam", price:199000, old:235000, kind:"set", c:"#6E7B6A", c2:"#FACFAE",
+desc:"10 rang tikuv ipi, 2 sm rezinka 10 m, flizelin 5 m va 10 ta yashirin zamok.", with:[4,13,15]},
+{id:3, cat:"thread", name:"Tikuv ipi 40/2", unit:"5000 m", price:18000, hit:true, kind:"thread", c:"#6E7B6A",
+desc:"Universal polyester ip. Har qanday tikuv uchun mos, 100+ rang.", with:[8,22,4]},
+{id:4, cat:"thread", name:"Overlok ipi (4 dona)", unit:"to'plam", price:48000, hit:true, kind:"thread", c:"#E9B88E",
+desc:"Overlok mashinasi uchun 4 g'altak bir xil rangda.", with:[3,11]},
+{id:5, cat:"thread", name:"Jinsi ipi 20/3", unit:"1000 m", price:22000, kind:"thread", c:"#C98B63",
+desc:"Qalin, mustahkam ip. Jinsi va qalin kiyimlarni bezakli tikish uchun.", with:[17,7]},
+{id:6, cat:"thread", name:"Kashta ipi to'plami", unit:"24 rang", price:35000, kind:"thread", c:"#8C4A3A",
+desc:"Kashta va bezak uchun 24 xil rangli ip.", with:[22]},
+{id:7, cat:"zip", name:"Yashirin zamok 20 sm", unit:"1 dona", price:4000, hit:true, kind:"zip", c:"#D9A87A",
+desc:"Yubka va ko'ylak uchun yashirin zamok. Ko'p rangda.", with:[3,13,8]},
+{id:8, cat:"zip", name:"Metall zamok 60 sm", unit:"1 dona", price:15000, kind:"zip", c:"#7A6458",
+desc:"Ajraladigan metall zamok. Kurtka va jaket uchun.", with:[3,9]},
+{id:9, cat:"zip", name:"Spiral zamok (metrli)", unit:"1 metr", price:6000, kind:"zip", c:"#6E7B6A",
+desc:"Metrlab sotiladigan spiral zamok — kerakli uzunlikda kesiladi.", with:[10]},
+{id:10, cat:"zip", name:"Zamok begunoki", unit:"10 dona", price:10000, kind:"slider", c:"#A7A3A5",
+desc:"Spiral zamok uchun begunok (yurgich), 5-o'lcham.", with:[9]},
+{id:11, cat:"elastic", name:"Rezinka 2 sm", unit:"1 metr", price:3000, hit:true, kind:"elastic", c:"#EDE7DE",
+desc:"Oq tikiladigan rezinka, eni 2 sm. Shim, yubka belbog'i uchun.", with:[3,12,22]},
+{id:12, cat:"elastic", name:"Rezinka 4 sm", unit:"1 metr", price:5000, kind:"elastic", c:"#3A3634",
+desc:"Keng rezinka, eni 4 sm. Sport kiyim va belbog'lar uchun.", with:[3,11]},
+{id:13, cat:"interfacing", name:"Flizelin", unit:"1 metr", price:9000, hit:true, kind:"roll", c:"#F1ECE6",
+desc:"Yopishqoq flizelin, eni 90 sm. Yoqa, manjet va planka uchun.", with:[14,15,3]},
+{id:14, cat:"interfacing", name:"Dublerin", unit:"1 metr", price:14000, hit:true, kind:"roll", c:"#2E2A28",
+desc:"Yelim qoplamali dublerin, eni 150 sm. Kostyum va palto uchun.", with:[13,15]},
+{id:15, cat:"interfacing", name:"Kleyevoy kromka", unit:"50 metr", price:25000, kind:"elastic", c:"#F1ECE6",
+desc:"Yopishqoq lenta, 1 sm. Chetlarni cho'zilishdan saqlaydi.", with:[13,14]},
+{id:16, cat:"hardware", name:"Tugmalar", unit:"20 dona", price:12000, kind:"button", c:"#8C4A3A",
+desc:"Plastik tugmalar, 15 mm. Ko'ylak va bluzka uchun.", with:[3,22]},
+{id:17, cat:"hardware", name:"Metall knopka", unit:"20 dona", price:15000, kind:"snap", c:"#B8B2AE",
+desc:"Urib qoqiladigan metall knopka, 12 mm.", with:[5]},
+{id:18, cat:"hardware", name:"Kryuchok-petlya", unit:"20 juft", price:8000, kind:"hook", c:"#B9AAAE",
+desc:"Shim va yubka belbog'i uchun metall ilgak.", with:[7,3]},
+{id:19, cat:"tools", name:"Bichish qaychisi", unit:"1 dona", price:95000, hit:true, kind:"scissors", c:"#8C4A3A",
+desc:"Professional po'lat qaychi, 25 sm. Qalin matolarni ham oson qirqadi.", with:[20,21,23]},
+{id:20, cat:"tools", name:"Santimetr lenta", unit:"150 sm", price:10000, kind:"tape", c:"#E9B88E",
+desc:"Yumshoq o'lchov lentasi, ikki tomonlama.", with:[21,19]},
+{id:21, cat:"tools", name:"Tikuvchi bo'ri", unit:"5 dona", price:5000, kind:"chalk", c:"#6E7B6A",
+desc:"Matoga chizish uchun bo'r, yuvilganda ketadi.", with:[20,19]},
+{id:22, cat:"tools", name:"Igna to'plami", unit:"30 dona", price:15000, kind:"needle", c:"#C98B63",
+desc:"Qo'lda va mashinada tikish uchun turli o'lchamdagi ignalar.", with:[3,23]},
+{id:23, cat:"tools", name:"Bulavka", unit:"100 dona", price:12000, kind:"needle", c:"#7A6458",
+desc:"Boshchali to'g'nag'ichlar — bichishda matoni ushlab turadi.", with:[22,21]}
+];
+const BANNERS = [
+{bg:"linear-gradient(140deg,#FACFAE,#E3A47C)", fg:"#1A120D", title:"Boshlovchi tikuvchi seti", price:149000, old:180000, note:"Qaychi, ip, igna — hammasi bitta to'plamda", pid:1, art:"spool"},
+{bg:"linear-gradient(140deg,#231B16,#120E0B)", fg:"#FACFAE", title:"500 000 so'mdan — bepul yetkazish", note:"Toshkent bo'ylab", art:"truck"},
+{bg:"linear-gradient(140deg,#8C5038,#4E2B1E)", fg:"#FFE9DA", title:"Har xariddan 3% bonus", note:"Bonus bilan keyingi xariddan to'laysiz", art:"star"}
+];
+/* =========================================================
+HOLAT
+========================================================= */
+const tg = window.Telegram && window.Telegram.WebApp && window.Telegram.WebApp.initData !== undefined ? window.Telegram.WebApp : null;
+if (tg) { try { tg.ready(); tg.expand(); tg.setHeaderColor && tg.setHeaderColor('#0B0908'); tg.setBackgroundColor && tg.setBackgroundColor('#0B0908'); tg.setBottomBarColor && tg.setBottomBarColor('#0B0908'); } catch(e){} }
+const store = {
+get(k, d){ try { const v = localStorage.getItem('monand_'+k); return v ? JSON.parse(v) : d; } catch(e){ return d; } },
+set(k, v){ try { localStorage.setItem('monand_'+k, JSON.stringify(v)); } catch(e){} }
+};
+let cart = store.get('cart', {});
+let orders = store.get('orders', []);
+let bonus = store.get('bonus', 0);
+let mode = store.get('mode', 'delivery');
+let cat = 'all';
+let view = 'home';
+let ck = Object.assign({name:'', phone:'', address:'', point:'', pay:CONFIG.payments[0], comment:'', useBonus:false}, store.get('profile', {}));
+if (tg && tg.initDataUnsafe && tg.initDataUnsafe.user && !ck.name) {
+const u = tg.initDataUnsafe.user; ck.name = [u.first_name, u.last_name].filter(Boolean).join(' ');
+}
+if (!CONFIG.pickupPoints.some(b=>b.id===ck.point)) ck.point='';
+const fmt = n => Math.round(n).toLocaleString('ru-RU').replace(/,/g,' ') + " so'm";
+const byId = id => PRODUCTS.find(p => p.id === id);
+const $ = id => document.getElementById(id);
+function haptic(t){ try { tg && tg.HapticFeedback && tg.HapticFeedback.impactOccurred(t||'light'); } catch(e){} }
+function toast(t){ const el=$('toast'); el.textContent=t; el.classList.add('show'); clearTimeout(toast._t); toast._t=setTimeout(()=>el.classList.remove('show'),1600); }
+/* =========================================================
+RASMLAR (SVG) — haqiqiy rasm qo'yilganda shular o'rniga
+========================================================= */
+function art(p){
+const c = p.c, c2 = p.c2 || '#fff';
+const bg = '#1E1814';
+switch(p.kind){
+case 'fabric': {
+let fill = `<rect width="200" height="200" fill="${c}"/>`;
+if (p.pat==='stripe') fill += [...Array(10)].map((_,i)=>`<rect x="${i*22}" y="0" width="7" height="200" fill="${c2}" opacity=".85"/>`).join('');
+if (p.pat==='tulle') fill += [...Array(20)].map((_,i)=>`<line x1="${i*11}" y1="0" x2="${i*11}" y2="200" stroke="#fff" stroke-width="1"/><line x1="0" y1="${i*11}" x2="200" y2="${i*11}" stroke="#d9cfc3" stroke-width=".6"/>`).join('');
+if (p.pat==='velvet') fill += `<rect width="200" height="200" fill="url(#vg${p.id})"/>`;
+if (p.pat==='plain') fill += `<rect width="200" height="200" fill="url(#sh${p.id})"/>`;
+return `<svg viewBox="0 0 200 200" preserveAspectRatio="xMidYMid slice"><defs>
+<linearGradient id="sh${p.id}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".35"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".2"/></linearGradient>
+<radialGradient id="vg${p.id}" cx=".3" cy=".3" r=".9"><stop offset="0" stop-color="#fff" stop-opacity=".3"/><stop offset="1" stop-color="#000" stop-opacity=".35"/></radialGradient>
+<clipPath id="cl${p.id}"><path d="M20 30 Q100 10 180 30 L180 170 Q140 190 100 172 Q60 190 20 170Z"/></clipPath></defs>
+<rect width="200" height="200" fill="${bg}"/>
+<g clip-path="url(#cl${p.id})">${fill}
+<path d="M60 20 Q70 100 55 190 M110 15 Q120 100 105 190 M150 20 Q160 100 148 190" stroke="#000" stroke-opacity=".12" stroke-width="10" fill="none"/></g></svg>`;
+}
+case 'thread':
+return `<svg viewBox="0 0 200 200"><rect width="200" height="200" fill="${bg}"/>
+<rect x="62" y="38" width="76" height="16" rx="5" fill="#C8B49A"/><rect x="62" y="146" width="76" height="16" rx="5" fill="#C8B49A"/>
+<rect x="70" y="54" width="60" height="92" fill="${c}"/>
+${[...Array(9)].map((_,i)=>`<line x1="70" y1="${60+i*10}" x2="130" y2="${64+i*10}" stroke="#000" stroke-opacity=".15" stroke-width="2"/>`).join('')}
+<path d="M130 120 Q170 130 160 170 Q150 190 120 185" stroke="${c}" stroke-width="3" fill="none"/></svg>`;
+case 'button':
+return `<svg viewBox="0 0 200 200"><rect width="200" height="200" fill="${bg}"/>
+${[[70,75,34],[132,90,26],[95,138,28]].map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${c}"/><circle cx="${x}" cy="${y}" r="${r-7}" fill="none" stroke="#fff" stroke-opacity=".3" stroke-width="2"/>
+<circle cx="${x-r/4}" cy="${y-r/4}" r="3.5" fill="${bg}"/><circle cx="${x+r/4}" cy="${y-r/4}" r="3.5" fill="${bg}"/><circle cx="${x-r/4}" cy="${y+r/4}" r="3.5" fill="${bg}"/><circle cx="${x+r/4}" cy="${y+r/4}" r="3.5" fill="${bg}"/>`).join('')}</svg>`;
+case 'zip':
+return `<svg viewBox="0 0 200 200"><rect width="200" height="200" fill="${bg}"/>
+<rect x="70" y="20" width="22" height="165" fill="${c}"/><rect x="108" y="20" width="22" height="165" fill="${c}"/>
+${[...Array(15)].map((_,i)=>`<rect x="${i%2?96:88}" y="${70+i*8}" width="16" height="5" rx="1" fill="#B9AAAE"/>`).join('')}
+<rect x="86" y="44" width="28" height="30" rx="6" fill="#8E8A8C"/><rect x="94" y="72" width="12" height="28" rx="5" fill="#8E8A8C"/></svg>`;
+case 'tape':
+return `<svg viewBox="0 0 200 200"><rect width="200" height="200" fill="${bg}"/>
+<circle cx="100" cy="100" r="62" fill="${c}"/><circle cx="100" cy="100" r="62" fill="none" stroke="#000" stroke-opacity=".12" stroke-width="2"/>
+<circle cx="100" cy="100" r="22" fill="${bg}"/>
+<path d="M150 140 L195 170 L195 196 L140 160Z" fill="${c}"/>
+${[...Array(6)].map((_,i)=>`<line x1="${152+i*7}" y1="${146+i*4.5}" x2="${148+i*7}" y2="${152+i*4.5}" stroke="#3A2A22" stroke-width="1.6"/>`).join('')}</svg>`;
+case 'hook':
+return `<svg viewBox="0 0 200 200"><rect width="200" height="200" fill="${bg}"/>
+${[50,100,150].map(x=>`<path d="M${x} 50 L${x} 120 Q${x} 150 ${x-18} 150 Q${x-30} 150 ${x-30} 135" stroke="${c}" stroke-width="9" fill="none" stroke-linecap="round"/><rect x="${x-14}" y="40" width="28" height="14" rx="4" fill="${c}"/>`).join('')}</svg>`;
+case 'ring':
+return `<svg viewBox="0 0 200 200"><rect width="200" height="200" fill="${bg}"/>
+${[[70,80],[130,80],[100,135]].map(([x,y])=>`<circle cx="${x}" cy="${y}" r="34" fill="none" stroke="${c}" stroke-width="10"/><circle cx="${x}" cy="${y}" r="34" fill="none" stroke="#fff" stroke-opacity=".35" stroke-width="2"/>`).join('')}</svg>`;
+case 'needle':
+return `<svg viewBox="0 0 200 200"><rect width="200" height="200" fill="${bg}"/>
+<rect x="40" y="50" width="120" height="100" rx="14" fill="${c}"/>
+${[...Array(7)].map((_,i)=>`<line x1="${58+i*14}" y1="62" x2="${58+i*14}" y2="140" stroke="#E8E4E0" stroke-width="3" stroke-linecap="round"/><ellipse cx="${58+i*14}" cy="68" rx="1.6" ry="3.5" fill="${c}"/>`).join('')}</svg>`;
+case 'scissors':
+return `<svg viewBox="0 0 200 200"><rect width="200" height="200" fill="${bg}"/>
+<path d="M100 100 L178 40" stroke="#8E8A8C" stroke-width="12" stroke-linecap="round"/><path d="M100 100 L178 160" stroke="#A7A3A5" stroke-width="12" stroke-linecap="round"/>
+<circle cx="62" cy="68" r="28" fill="none" stroke="${c}" stroke-width="14"/><circle cx="62" cy="132" r="28" fill="none" stroke="${c}" stroke-width="14"/>
+<path d="M84 84 L100 100 L84 116" stroke="${c}" stroke-width="14" fill="none"/><circle cx="102" cy="100" r="5" fill="#3A2A22"/></svg>`;
+case 'chalk':
+return `<svg viewBox="0 0 200 200"><rect width="200" height="200" fill="${bg}"/>
+${[["#6E7B6A",-14],["#E9B88E",0],["#fff",14]].map(([col,a],i)=>`<g transform="translate(100 100) rotate(${a}) translate(${(i-1)*44} 0)"><path d="M-30 -22 L30 -22 L22 22 L-22 22Z" fill="${col}" stroke="#00000020"/></g>`).join('')}</svg>`;
+case 'elastic':
+return `<svg viewBox="0 0 200 200"><rect width="200" height="200" fill="${bg}"/>
+<ellipse cx="100" cy="112" rx="66" ry="56" fill="${c}"/><ellipse cx="100" cy="112" rx="66" ry="56" fill="none" stroke="#000" stroke-opacity=".18" stroke-width="2"/>
+${[50,40,30,20].map(r=>`<ellipse cx="100" cy="112" rx="${r+10}" ry="${r}" fill="none" stroke="#000" stroke-opacity=".12" stroke-width="2"/>`).join('')}
+<ellipse cx="100" cy="112" rx="18" ry="12" fill="${bg}"/>
+<path d="M150 140 Q175 160 160 186 L148 186 Q160 162 140 146Z" fill="${c}" stroke="#000" stroke-opacity=".15"/></svg>`;
+case 'roll':
+return `<svg viewBox="0 0 200 200"><rect width="200" height="200" fill="${bg}"/>
+<path d="M60 60 L170 60 L170 168 L60 168Z" fill="${c}" opacity=".9"/>
+${[...Array(9)].map((_,i)=>`<line x1="${70+i*12}" y1="64" x2="${70+i*12}" y2="164" stroke="#000" stroke-opacity=".06" stroke-width="2"/>`).join('')}
+<rect x="30" y="40" width="42" height="140" rx="21" fill="${c}"/><ellipse cx="51" cy="44" rx="21" ry="9" fill="#000" fill-opacity=".18"/>
+<ellipse cx="51" cy="44" rx="7" ry="3" fill="${bg}"/></svg>`;
+case 'slider':
+return `<svg viewBox="0 0 200 200"><rect width="200" height="200" fill="${bg}"/>
+${[[70,70],[130,90],[95,140]].map(([x,y])=>`<g transform="translate(${x} ${y})"><rect x="-18" y="-22" width="36" height="34" rx="8" fill="${c}"/><rect x="-6" y="10" width="12" height="30" rx="6" fill="${c}"/><circle cx="0" cy="30" r="3" fill="${bg}"/></g>`).join('')}</svg>`;
+case 'snap':
+return `<svg viewBox="0 0 200 200"><rect width="200" height="200" fill="${bg}"/>
+${[[70,78,30],[135,92,24],[98,140,26]].map(([x,y,r])=>`<circle cx="${x}" cy="${y}" r="${r}" fill="${c}"/><circle cx="${x}" cy="${y}" r="${r-8}" fill="none" stroke="#000" stroke-opacity=".2" stroke-width="3"/><circle cx="${x}" cy="${y}" r="${r/4}" fill="#000" fill-opacity=".25"/>`).join('')}</svg>`;
+case 'set':
+return `<svg viewBox="0 0 200 200"><rect width="200" height="200" fill="${bg}"/>
+<rect x="35" y="70" width="130" height="100" rx="12" fill="${c}"/>
+<rect x="35" y="70" width="130" height="28" rx="8" fill="#000" fill-opacity=".15"/>
+<rect x="92" y="70" width="16" height="100" fill="${c2}"/>
+<path d="M100 70 Q70 30 60 55 Q55 72 100 70 Q145 72 140 55 Q130 30 100 70" fill="none" stroke="${c2}" stroke-width="9" stroke-linejoin="round"/></svg>`;
+}
+return `<svg viewBox="0 0 200 200"><rect width="200" height="200" fill="${bg}"/></svg>`;
+}
+function bannerArt(k){
+if (k==='spool') return `<svg class="art" viewBox="0 0 160 140"><rect x="40" y="14" width="80" height="14" rx="5" fill="#1A120D"/><rect x="40" y="112" width="80" height="14" rx="5" fill="#1A120D"/><rect x="50" y="28" width="60" height="84" fill="#8C4A3A"/>${[...Array(8)].map((_,i)=>`<line x1="50" y1="${34+i*10}" x2="110" y2="${38+i*10}" stroke="#1A120D" stroke-opacity=".25" stroke-width="2"/>`).join('')}<path d="M110 90 Q150 100 140 130" stroke="#8C4A3A" stroke-width="3" fill="none"/></svg>`;
+if (k==='curtain') return `<svg class="art" viewBox="0 0 160 140"><rect x="10" y="10" width="140" height="8" rx="4" fill="#1A120D"/>
+<path d="M18 18 Q30 70 22 132 L62 132 Q54 70 66 18Z" fill="#1A120D" fill-opacity=".88"/><path d="M94 18 Q106 70 98 132 L138 132 Q130 70 142 18Z" fill="#1A120D" fill-opacity=".88"/>
+<path d="M30 18 Q38 70 34 132 M46 18 Q50 70 48 132 M106 18 Q114 70 110 132 M122 18 Q126 70 124 132" stroke="#FACFAE" stroke-opacity=".25" stroke-width="4" fill="none"/></svg>`;
+if (k==='truck') return `<svg class="art" viewBox="0 0 160 140"><rect x="14" y="44" width="80" height="56" rx="8" fill="#FACFAE"/><path d="M94 60h30l18 20v20H94z" fill="#E9B88E"/><circle cx="40" cy="108" r="13" fill="#FACFAE"/><circle cx="120" cy="108" r="13" fill="#FACFAE"/><circle cx="40" cy="108" r="5" fill="#120E0B"/><circle cx="120" cy="108" r="5" fill="#120E0B"/></svg>`;
+return `<svg class="art" viewBox="0 0 160 140"><path d="M90 14l16 34 37 4-28 25 8 37-33-19-33 19 8-37-28-25 37-4z" fill="#FACFAE"/></svg>`;
+}
+/* =========================================================
+SAVAT HISOB-KITOBI
+========================================================= */
+const cartCount = () => Object.values(cart).reduce((a,b)=>a+b,0);
+const subtotal = () => Object.entries(cart).reduce((s,[id,q])=>s+byId(+id).price*q,0);
+const deliveryCost = () => mode==='pickup' || subtotal()>=CONFIG.freeDeliveryFrom ? 0 : CONFIG.deliveryFee;
+const bonusUsed = () => ck.useBonus ? Math.min(bonus, subtotal()) : 0;
+const total = () => subtotal() + deliveryCost() - bonusUsed();
+function setQty(id, q){
+if (q<=0) delete cart[id]; else cart[id]=q;
+store.set('cart', cart); haptic(); refresh();
+}
+function add(id){ setQty(id, (cart[id]||0)+1); if((cart[id]||0)===1) toast('Savatga qo\'shildi'); }
+/* =========================================================
+KO'RINISHLAR
+========================================================= */
+function setMode(m){
+mode=m; store.set('mode',m); renderMode(); haptic();
+if(view!=='home') render();
+if(m==='pickup' && !ck.point) setTimeout(openBranches, 120);
+}
+const branchName = id => (CONFIG.pickupPoints.find(b=>b.id===id)||{}).name || '';
+const PIN = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#FACFAE" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s-7-6.2-7-11.5A7 7 0 0 1 19 9.5C19 14.8 12 21 12 21z"/><circle cx="12" cy="9.5" r="2.5"/></svg>';
+function renderMode(){
+$('m-delivery').classList.toggle('on', mode==='delivery');
+$('m-pickup').classList.toggle('on', mode==='pickup');
+const bar = $('branchBar');
+if (mode==='delivery'){
+$('modeNote').innerHTML = `Toshkent bo'ylab · <b>${fmt(CONFIG.freeDeliveryFrom)}</b> dan bepul`;
+$('modeNote').classList.remove('hide'); bar.classList.add('hide');
+} else {
+$('modeNote').classList.add('hide'); bar.classList.remove('hide');
+bar.classList.toggle('need', !ck.point);
+bar.innerHTML = `<span class="ic">${PIN}</span><span class="t"><small>Qaysi filialdan olib ketasiz?</small><b>${ck.point ? branchName(ck.point) : 'Filialni tanlang'}</b></span><span class="ch">${ck.point?"O'zgartirish":'Tanlash ›'}</span>`;
+}
+}
+function openBranches(){
+openId = null;
+$('sheet').innerHTML = `<div class="grab"></div>
+<h3>Filialni tanlang</h3>
+<p class="desc">Buyurtmangizni qaysi filialdan olib ketasiz? Tayyor bo'lganda xabar beramiz.</p>
+<div class="branches">${CONFIG.pickupPoints.map(b=>`<button class="br ${ck.point===b.id?'on':''}" onclick="pickBranch('${b.id}')">
+<span class="rad"></span><span><b>${b.name}</b><small>${b.note||''}</small></span></button>`).join('')}</div>`;
+$('veil').classList.add('show'); $('sheet').classList.add('show'); haptic();
+}
+function pickBranch(id){
+ck.point = id; saveCk(); haptic('medium');
+closeSheet(); renderMode(); if (view==='checkout') renderCheckout();
+toast('Filial: '+branchName(id));
+}
+function renderBanners(){
+$('banners').innerHTML = BANNERS.map(b=>`<div class="banner" style="background:${b.bg};color:${b.fg}" ${b.pid?`onclick="openProduct(${b.pid})"`:''}>
+<div><h3>${b.title}</h3><p>${b.note}</p></div>
+${b.price?`<div><span class="price">${b.price.toLocaleString('ru-RU').replace(/,/g,' ')}</span><span class="old">${b.old.toLocaleString('ru-RU').replace(/,/g,' ')}</span></div>`:'<div></div>'}
+${bannerArt(b.art)}<svg class="mk" viewBox="345 228 386 442">${MONAND_MARK}</svg></div>`).join('');
+}
+function renderCats(){
+$('cats').innerHTML = CATS.map(c=>`<button class="cat ${c.id===cat?'on':''}" onclick="cat='${c.id}';renderCats();renderGrid()">${c.name}</button>`).join('');
+}
+function qtyCtl(p){
+const q = cart[p.id]||0;
+return q ? `<div class="stepper" onclick="event.stopPropagation()"><button onclick="setQty(${p.id},${q-1})">−</button><span>${q}</span><button onclick="setQty(${p.id},${q+1})">+</button></div>`
+: `<button class="add" onclick="event.stopPropagation();add(${p.id})">+</button>`;
+}
+function renderGrid(){
+const q = $('q').value.trim().toLowerCase();
+let list = PRODUCTS.filter(p => (cat==='all' || p.cat===cat) && (!q || (p.name+' '+p.desc).toLowerCase().includes(q)));
+if (cat==='all' && !q) list = [...list].sort((a,b)=>(b.hit?1:0)-(a.hit?1:0));
+$('secTitle').textContent = q ? 'Qidiruv natijasi' : (cat==='all' ? "Ko'p sotiladigan" : CATS.find(c=>c.id===cat).name.replace('🎁 ',''));
+$('grid').innerHTML = list.length ? list.map(p=>`<div class="p" onclick="openProduct(${p.id})">
+<div class="img">${art(p)}${p.old?`<span class="tag">−${Math.round((1-p.price/p.old)*100)}%</span>`:(p.hit?'<span class="tag">Xit</span>':'')}</div>
+<div class="name">${p.name}</div><div class="unit">${p.unit}</div>
+<div class="row"><div class="pr">${p.old?`<s>${fmt(p.old)}</s>`:''}${fmt(p.price)}</div>${qtyCtl(p)}</div></div>`).join('')
+: `<div class="empty" style="grid-column:1/-1">Hech narsa topilmadi</div>`;
+}
+let openId = null;
+function openProduct(id){
+openId = id; const p = byId(id); renderSheet(p);
+$('veil').classList.add('show'); $('sheet').classList.add('show'); haptic();
+}
+function renderSheet(p){
+const q = cart[p.id]||0;
+const withs = (p.with||[]).map(byId).filter(Boolean);
+$('sheet').innerHTML = `<div class="grab"></div><div class="big">${art(p)}</div>
+<h3>${p.name}</h3><div style="font-size:13px;font-weight:700;color:var(--muted)">${p.unit}</div>
+<p class="desc" style="margin-top:8px">${p.desc}</p>
+<div style="font-size:24px;font-weight:800">${fmt(p.price)} ${p.old?`<s style="font-size:14px;color:var(--muted)">${fmt(p.old)}</s>`:''}</div>
+<div class="buyrow">
+${q?`<div class="stepper"><button onclick="setQty(${p.id},${q-1})">−</button><span>${q}</span><button onclick="setQty(${p.id},${q+1})">+</button></div>
+<button class="primary" onclick="closeSheet();go('cart')">Savatga o'tish · ${fmt(subtotal())}</button>`
+:`<button class="primary" onclick="add(${p.id})">Savatga qo'shish</button>`}
+</div>
+${withs.length?`<div class="with"><h4>Bu bilan birga olishadi</h4><div class="mini">${withs.map(w=>`<div class="m" onclick="openProduct(${w.id})">
+<div class="i">${art(w)}</div><div class="n">${w.name}</div>
+<div class="r"><span>${(w.price/1000)}k</span>${cart[w.id]?`<span style="color:var(--ok)">✓ ${cart[w.id]}</span>`:`<button class="add" onclick="event.stopPropagation();add(${w.id})">+</button>`}</div></div>`).join('')}</div></div>`:''}`;
+}
+function closeSheet(){ openId=null; $('veil').classList.remove('show'); $('sheet').classList.remove('show'); }
+function cartUpsell(){
+const inCart = new Set(Object.keys(cart).map(Number));
+const ids = [];
+inCart.forEach(id => (byId(id).with||[]).forEach(w => { if(!inCart.has(w) && !ids.includes(w)) ids.push(w); }));
+return ids.slice(0,6).map(byId);
+}
+function renderCart(){
+const items = Object.entries(cart);
+if (!items.length){
+$('v-cart').innerHTML = `<h1>Savat</h1><div class="empty"><div style="font-size:48px">🧵</div>Savat hozircha bo'sh<br><br><button class="primary" style="max-width:240px" onclick="go('home')">Xarid qilish</button></div>`;
+return;
+}
+const st = subtotal(), left = CONFIG.freeDeliveryFrom - st;
+const ups = cartUpsell();
+$('v-cart').innerHTML = `<h1>Savat</h1>
+${items.map(([id,q])=>{const p=byId(+id);return `<div class="line"><div class="i" onclick="openProduct(${p.id})">${art(p)}</div>
+<div class="t"><b>${p.name}</b><small>${p.unit} · ${fmt(p.price)}</small><div style="font-weight:800;margin-top:4px">${fmt(p.price*q)}</div></div>
+<div class="stepper"><button onclick="setQty(${p.id},${q-1})">−</button><span>${q}</span><button onclick="setQty(${p.id},${q+1})">+</button></div></div>`}).join('')}
+${mode==='delivery'?`<div class="progress"><p>${left>0?`Bepul yetkazishgacha yana <span style="color:var(--brand)">${fmt(left)}</span>`:'🎉 Yetkazib berish bepul!'}</p>
+<div class="track"><i style="width:${Math.min(100,st/CONFIG.freeDeliveryFrom*100)}%"></i></div></div>`:''}
+${ups.length?`<div class="with" style="margin-top:6px"><h4>Unutmadingizmi?</h4><div class="mini">${ups.map(w=>`<div class="m" onclick="openProduct(${w.id})">
+<div class="i">${art(w)}</div><div class="n">${w.name}</div><div class="r"><span>${(w.price/1000)}k</span><button class="add" onclick="event.stopPropagation();add(${w.id})">+</button></div></div>`).join('')}</div></div>`:''}
+<div class="sum">
+<div><span>Mahsulotlar</span><span>${fmt(st)}</span></div>
+<div><span>${mode==='pickup'?'Olib ketish':'Yetkazib berish'}</span><span class="${deliveryCost()?'':'g'}">${deliveryCost()?fmt(deliveryCost()):'Bepul'}</span></div>
+<div class="tot"><span>Jami</span><span>${fmt(st+deliveryCost())}</span></div>
+<div><span style="color:var(--muted)">Bu xariddan bonus</span><span class="g">+${fmt(st*CONFIG.bonusPercent/100)}</span></div>
+</div>
+<button class="primary" style="width:100%" onclick="go('checkout')">Rasmiylashtirish</button>`;
+}
+function renderCheckout(){
+if (!cartCount()) return go('cart');
+$('v-checkout').innerHTML = `<h1>Rasmiylashtirish</h1>
+<div class="f"><label>Qabul qilish turi</label><div class="chips">
+<button class="${mode==='delivery'?'on':''}" onclick="setMode('delivery')">🚚 Yetkazib berish</button>
+<button class="${mode==='pickup'?'on':''}" onclick="setMode('pickup')">🏬 Olib ketaman</button></div></div>
+<div class="f"><label>Ismingiz</label><input id="c-name" value="${esc(ck.name)}" placeholder="Masalan: Dilnoza"></div>
+<div class="f"><label>Telefon raqam</label><div style="display:flex;gap:8px">
+<input id="c-phone" type="tel" value="${esc(ck.phone)}" placeholder="+998 90 123 45 67" style="flex:1">
+${tg && tg.requestContact ? `<button class="primary" style="flex:0 0 auto;padding:14px;font-size:13px;border-radius:16px" onclick="askContact()">📱 Ulashish</button>`:''}</div></div>
+${mode==='delivery'
+? `<div class="f"><label>Manzil</label><textarea id="c-addr" rows="2" placeholder="Tuman, ko'cha, uy, mo'ljal">${esc(ck.address)}</textarea></div>`
+: `<div class="f"><label>Qaysi filialdan olib ketasiz</label><div class="branches">${CONFIG.pickupPoints.map(b=>`<button class="br ${ck.point===b.id?'on':''}" onclick="ck.point='${b.id}';saveCk();renderMode();renderCheckout()"><span class="rad"></span><span><b>${b.name}</b><small>${b.note||''}</small></span></button>`).join('')}</div></div>`}
+<div class="f"><label>To'lov turi</label><div class="chips">${CONFIG.payments.map(pm=>`<button class="${ck.pay===pm?'on':''}" onclick="ck.pay='${pm}';saveCk();renderCheckout()">${pm}</button>`).join('')}</div></div>
+<div class="f"><label>Izoh (ixtiyoriy)</label><input id="c-comm" value="${esc(ck.comment)}" placeholder="Rang, o'lcham yoki boshqa istak"></div>
+${bonus>0?`<div class="f"><div class="chips"><button class="${ck.useBonus?'on':''}" onclick="ck.useBonus=!ck.useBonus;renderCheckout()">★ ${fmt(bonus)} bonusni ishlatish</button></div></div>`:''}
+<div class="sum">
+<div><span>Mahsulotlar</span><span>${fmt(subtotal())}</span></div>
+<div><span>${mode==='pickup'?'Olib ketish':'Yetkazib berish'}</span><span class="${deliveryCost()?'':'g'}">${deliveryCost()?fmt(deliveryCost()):'Bepul'}</span></div>
+${bonusUsed()?`<div><span>Bonus</span><span class="g">−${fmt(bonusUsed())}</span></div>`:''}
+<div class="tot"><span>To'lanadi</span><span>${fmt(total())}</span></div>
+</div>
+<div class="err" id="c-err"></div>
+<button class="primary" style="width:100%" onclick="placeOrder()">Buyurtma berish · ${fmt(total())}</button>`;
+['c-name','c-phone','c-addr','c-comm'].forEach(id=>{const el=$(id); if(el) el.addEventListener('input', saveCk);});
+}
+function esc(s){ return String(s||'').replace(/[&<>"]/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c])); }
+function saveCk(){
+const v = id => $(id) ? $(id).value : undefined;
+if (v('c-name')!==undefined) ck.name=v('c-name');
+if (v('c-phone')!==undefined) ck.phone=v('c-phone');
+if (v('c-addr')!==undefined) ck.address=v('c-addr');
+if (v('c-comm')!==undefined) ck.comment=v('c-comm');
+store.set('profile', {name:ck.name, phone:ck.phone, address:ck.address, point:ck.point, pay:ck.pay});
+}
+function askContact(){
+try { tg.requestContact(ok => { if (ok) toast("Raqam yuborildi"); }); } catch(e){}
+}
+function placeOrder(){
+saveCk();
+const phoneDigits = (ck.phone||'').replace(/\D/g,'');
+let err = '';
+if (!ck.name.trim()) err = 'Ismingizni yozing';
+else if (phoneDigits.length < 9) err = "Telefon raqamni to'liq yozing";
+else if (mode==='delivery' && !ck.address.trim()) err = 'Manzilni yozing';
+else if (mode==='pickup' && !ck.point) err = 'Olib ketish uchun filialni tanlang';
+if (err){ $('c-err').textContent = err; haptic('heavy'); return; }
+const order = {
+no: 1000 + orders.length + 1 + Math.floor(Math.random()*90),
+date: new Date().toISOString(),
+type: mode==='delivery' ? 'Yetkazib berish' : 'Olib ketish',
+name: ck.name.trim(), phone: ck.phone.trim(),
+address: mode==='delivery' ? ck.address.trim() : 'Filial: '+branchName(ck.point),
+branch: mode==='pickup' ? ck.point : null,
+pay: ck.pay, comment: ck.comment.trim(),
+items: Object.entries(cart).map(([id,q])=>{const p=byId(+id);return {id:p.id,name:p.name,unit:p.unit,price:p.price,qty:q};}),
+subtotal: subtotal(), delivery: deliveryCost(), bonusUsed: bonusUsed(), total: total(),
+bonusEarned: Math.round(subtotal()*CONFIG.bonusPercent/100),
+status: 'Qabul qilindi'
+};
+bonus = bonus - order.bonusUsed + order.bonusEarned;
+orders.unshift(order); cart = {}; ck.useBonus=false;
+store.set('orders', orders); store.set('cart', cart); store.set('bonus', bonus);
+// Buyurtma matni tayyor holda do'kon akkauntiga yuboriladi — mijoz faqat "Yuborish"ni bosadi
+const link = 'https://t.me/' + CONFIG.orderTo + '?text=' + encodeURIComponent(orderText(order));
+lastOrder = order; lastLink = link; go('done');
+setTimeout(()=>sendOrder(), 350);
+return;
+lastOrder = order; go('done');
+}
+let lastOrder = null;
+let lastLink = null;
+function sendOrder(){
+if (!lastLink) return;
+try { if (tg && tg.openTelegramLink) { tg.openTelegramLink(lastLink); return; } } catch(e){}
+const a = document.getElementById('sendLink'); if (a) a.click();
+}
+function orderText(o){
+const L = [];
+L.push(`🧾 YANGI BUYURTMA №${o.no}`);
+L.push('');
+o.items.forEach(i => L.push(`• ${i.name} (${i.unit}) × ${i.qty} = ${fmt(i.price*i.qty)}`));
+L.push('');
+L.push(`Mahsulotlar: ${fmt(o.subtotal)}`);
+if (o.type==='Yetkazib berish') L.push(`Yetkazish: ${o.delivery?fmt(o.delivery):'bepul'}`);
+if (o.bonusUsed) L.push(`Bonus: −${fmt(o.bonusUsed)}`);
+L.push(`JAMI: ${fmt(o.total)}`);
+L.push('');
+L.push(o.type==='Yetkazib berish' ? `🚚 Yetkazib berish: ${o.address}` : `🏬 Olib ketish — ${o.address}`);
+L.push(`👤 ${o.name}`);
+L.push(`📞 ${o.phone}`);
+L.push(`💳 To'lov: ${o.pay}`);
+if (o.comment) L.push(`💬 ${o.comment}`);
+return L.join('\n');
+}
+function renderDone(){
+const o = lastOrder || orders[0];
+$('v-done').innerHTML = `<div class="done"><div class="ok"><svg width="44" height="44" viewBox="0 0 24 24" fill="none" stroke="#1A120D" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg></div>
+<h1>Buyurtma tayyor!</h1>
+<p>№ ${o.no} · ${fmt(o.total)}<br>${o.type==='Yetkazib berish'?'Operator tez orada qo\'ng\'iroq qilib, yetkazish vaqtini kelishadi.':`Buyurtmangiz tayyor bo'lganda xabar beramiz.<br><b style="color:var(--peach)">${o.address}</b>`}</p>
+<p style="color:var(--ok)">+${fmt(o.bonusEarned)} bonus hisobingizga tushdi</p>
+<div style="background:var(--card);border:1px solid var(--peach);border-radius:18px;padding:14px;margin:14px 0;text-align:left;font-size:14px;line-height:1.45">
+<b style="color:var(--peach)">Oxirgi qadam:</b> ochilgan chatda <b>«Yuborish»</b> tugmasini bosing — buyurtmangiz do'konga yetib boradi.</div>
+${lastLink?`<button class="primary" style="width:100%;max-width:320px" onclick="sendOrder()">📨 Buyurtmani yuborish</button><a id="sendLink" href="${lastLink}" target="_blank" rel="noopener" class="hide"></a><br><br>`:''}
+<button class="cat" style="padding:12px 18px" onclick="go('orders')">Buyurtmalarim</button></div>`;
+}
+function renderOrders(){
+$('v-orders').innerHTML = `<h1>Buyurtmalarim</h1>` + (orders.length ? orders.map(o=>`<div class="order">
+<div class="h"><b>№ ${o.no}</b><span class="st">${o.status}</span></div>
+<p>${new Date(o.date).toLocaleString('ru-RU',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})} · ${o.type}${o.branch?' · '+o.branch:''}<br>
+${o.items.map(i=>`${i.name} × ${i.qty}`).join(', ')}</p>
+<div class="h" style="margin-top:10px"><b>${fmt(o.total)}</b>
+<button class="cat" onclick="repeatOrder(${o.no})">↻ Takrorlash</button></div></div>`).join('')
+: `<div class="empty"><div style="font-size:48px">📦</div>Hali buyurtma yo'q</div>`)
++ `<button class="cat" style="width:100%;margin-top:8px;padding:14px" onclick="go('profile')">👤 Profil va bonuslar</button>`;
+}
+function repeatOrder(no){
+const o = orders.find(x=>x.no===no); if(!o) return;
+o.items.forEach(i=>{ if(byId(i.id)) cart[i.id]=(cart[i.id]||0)+i.qty; });
+store.set('cart', cart); toast("Savatga qo'shildi"); go('cart');
+}
+function renderProfile(){
+$('v-profile').innerHTML = `<h1>Profil</h1>
+<div class="profile-card"><svg viewBox="345 228 386 442">${MONAND_MARK}</svg><small>Bonus hisobingiz</small><div class="b">${fmt(bonus)}</div>
+<small>Har xariddan ${CONFIG.bonusPercent}% qaytadi · keyingi xariddan to'lash mumkin</small></div>
+<div class="info">
+<div><span>Ism</span>${esc(ck.name)||'—'}</div>
+<div><span>Telefon</span>${esc(ck.phone)||'—'}</div>
+<div><span>Manzil</span>${esc(ck.address)||'—'}</div>
+<div><span>Buyurtmalar</span>${orders.length} ta</div>
+</div>
+<div class="info">
+<div><span>Filiallar</span>${CONFIG.pickupPoints.map(b=>b.name).join(' · ')}</div>
+<div><span>Tanlangan filial</span>${ck.point?branchName(ck.point):'—'}</div>
+<div><span>Instagram</span>@monand_uz</div>
+</div>`;
+}
+/* =========================================================
+MIJOZ QR KODI — har 1 daqiqada yangilanadi
+Kassir skanerlaydi -> xarid summasining 1% i cashback
+========================================================= */
+function customerId(){
+let id = store.get('cid', null);
+if (!id){
+const tgId = tg && tg.initDataUnsafe && tg.initDataUnsafe.user && tg.initDataUnsafe.user.id;
+id = tgId ? 'TG' + tgId : 'MN' + Math.random().toString().slice(2,10);
+store.set('cid', id);
+}
+return id;
+}
+function shortCode(id){ const d = id.replace(/\D/g,'').slice(-8).padStart(8,'0'); return 'MN-' + d.slice(0,4) + '-' + d.slice(4); }
+function sig(str){ // FNV-1a — haqiqiy tizimda server imzosi bilan almashtiriladi
+let h = 0x811c9dc5; for (let i=0;i<str.length;i++){ h ^= str.charCodeAt(i); h = Math.imul(h, 0x01000193) >>> 0; }
+return h.toString(36).toUpperCase();
+}
+function qrPayload(){
+const win = Math.floor(Date.now() / (CONFIG.qrRefreshSeconds*1000));
+const id = customerId();
+return { win, text: `MONAND|${id}|${win}|${sig(id+'|'+win+'|monand')}` };
+}
+let qrTimer = null, qrWin = null;
+function renderQR(){
+const sec = CONFIG.qrRefreshSeconds, id = customerId();
+$('v-qr').innerHTML = `<h1>Mening QR kodim</h1>
+<div class="qr-card"><div class="qr"><div id="qrBox" style="width:100%;height:100%"></div>
+<div class="qr-mark"><svg viewBox="345 228 386 442">${MONAND_MARK}</svg></div></div>
+<div class="cid">${shortCode(id)}</div></div>
+<div class="timer"><svg viewBox="0 0 36 36"><circle cx="18" cy="18" r="15" fill="none" stroke="#2A221D" stroke-width="4"/>
+<circle id="qrRing" cx="18" cy="18" r="15" fill="none" stroke="#FACFAE" stroke-width="4" stroke-linecap="round" stroke-dasharray="94.2" stroke-dashoffset="0"/></svg>
+<span>Yangilanadi: <b id="qrLeft">${sec}</b> soniyadan keyin</span></div>
+<div class="cb-card"><div><small>Cashback hisobingiz</small><b>${fmt(bonus)}</b></div><div class="pct">${CONFIG.storeCashbackPercent}%</div></div>
+<div class="howto">
+<div><i>1</i><span>Do'konimizda xarid qiling</span></div>
+<div><i>2</i><span>To'lovdan keyin shu QR kodni kassirga ko'rsating</span></div>
+<div><i>3</i><span>Xarid summasining <b style="color:var(--peach)">${CONFIG.storeCashbackPercent}%</b> i hisobingizga tushadi — keyingi xariddan to'laysiz</span></div>
+</div>
+<p style="color:var(--muted);font-size:12px;margin:14px 6px 0">QR har ${sec} soniyada o'zgaradi — skrinshot qilingan kod ishlamaydi.</p>`;
+qrWin = null; tickQR();
+if (qrTimer) clearInterval(qrTimer);
+qrTimer = setInterval(tickQR, 1000);
+}
+function tickQR(){
+if (view!=='qr' || !$('qrBox')) return;
+const sec = CONFIG.qrRefreshSeconds, nowS = Date.now()/1000;
+const left = Math.ceil(sec - (nowS % sec));
+const p = qrPayload();
+if (p.win !== qrWin){
+qrWin = p.win;
+const q = qrcode(0, 'H'); q.addData(p.text); q.make();
+$('qrBox').innerHTML = q.createSvgTag({cellSize:8, margin:0, scalable:true});
+if (qrWin !== null) haptic('light');
+}
+$('qrLeft').textContent = left;
+$('qrRing').setAttribute('stroke-dashoffset', (94.2 * (1 - left/sec)).toFixed(1));
+}
+/* =========================================================
+NAVIGATSIYA
+========================================================= */
+function go(v){
+view = v; closeSheet();
+if (v!=='qr' && qrTimer){ clearInterval(qrTimer); qrTimer=null; }
+['home','cart','checkout','orders','profile','done','qr'].forEach(x=>$('v-'+x).classList.toggle('hide', x!==v));
+refresh(); window.scrollTo(0,0);
+if (tg && tg.BackButton){ try { v==='home' ? tg.BackButton.hide() : tg.BackButton.show(); } catch(e){} }
+}
+function render(){
+if (view==='home'){ renderMode(); renderGrid(); }
+if (view==='cart') renderCart();
+if (view==='checkout') renderCheckout();
+if (view==='orders') renderOrders();
+if (view==='profile') renderProfile();
+if (view==='done') renderDone();
+if (view==='qr') renderQR();
+}
+function refresh(){
+const n = cartCount(); const b=$('cartBadge'); b.textContent=n; b.classList.toggle('hide', !n);
+$('bonusTop').textContent = Math.round(bonus).toLocaleString('ru-RU').replace(/,/g,' ');
+document.querySelectorAll('.nav .bar button').forEach(btn=>btn.classList.toggle('on', btn.dataset.v===(['checkout','done'].includes(view)?'cart':view==='profile'?'orders':view)));
+render();
+if (openId) renderSheet(byId(openId));
+}
+if (tg && tg.BackButton){ try { tg.BackButton.onClick(()=> go(view==='checkout'?'cart':'home')); } catch(e){} }
+renderBanners(); renderCats(); go('home'); refresh();
+</script>
+</body>
+</html>
